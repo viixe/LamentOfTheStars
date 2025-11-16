@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lament of the Stars - A VIIXE Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-violet: #7B2CBF;
+            --deep-violet: #3C096C;
+            --light-violet: #9D4EDD;
+            --pale-violet: #C77DFF;
+            --dark-bg: #000000;
+            --darker-gray: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: var(--dark-bg);
+            color: #FFFFFF;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Starfield Background */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #FFFFFF;
+            width: 2px;
+            height: 2px;
+            animation: twinkle 3s infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Game Container */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Title Screen */
+        .title-screen {
+            text-align: center;
+            padding: 40px 20px;
+            border: 4px solid var(--primary-violet);
+            background: rgba(0, 0, 0, 0.98);
+            image-rendering: pixelated;
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.4);
+        }
+
+        .title-screen h1 {
+            font-size: 24px;
+            color: var(--light-violet);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px var(--deep-violet);
+        }
+
+        .title-screen h2 {
+            font-size: 14px;
+            color: var(--pale-violet);
+            margin-bottom: 30px;
+        }
+
+        .title-text {
+            font-size: 11px;
+            line-height: 1.8;
+            color: #999;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+
+        /* Story Container */
+        .story-container {
+            display: none;
+        }
+
+        .story-container.active {
+            display: block;
+        }
+
+        /* Text Box */
+        .text-box {
+            background: #0d0d0d;
+            border: 3px solid #333;
+            padding: 25px;
+            margin-bottom: 30px;
+            min-height: 200px;
+            image-rendering: pixelated;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 0.3);
+        }
+
+        .text-box h3 {
+            font-size: 14px;
+            color: var(--light-violet);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-violet);
+            padding-bottom: 10px;
+        }
+
+        .text-box p {
+            font-size: 11px;
+            line-height: 2;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        /* Choices Container */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--deep-violet);
+            color: #FFFFFF;
+            border: 3px solid #333;
+            padding: 15px 20px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            image-rendering: pixelated;
+            position: relative;
+        }
+
+        .choice-btn::before {
+            content: '► ';
+            color: var(--pale-violet);
+        }
+
+        .choice-btn:hover {
+            background: var(--primary-violet);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.6);
+            border-color: var(--light-violet);
+        }
+
+        .choice-btn:active {
+            transform: translateX(3px);
+        }
+
+        /* Stats Display */
+        .stats-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--deep-violet);
+            padding: 15px;
+            font-size: 9px;
+            z-index: 100;
+            min-width: 200px;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 0.4);
+        }
+
+        .stat-item {
+            margin-bottom: 10px;
+            color: #999;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 10px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            margin-top: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: var(--primary-violet);
+            transition: width 0.5s;
+            image-rendering: pixelated;
+            box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+        }
+
+        /* Fade Transition */
+        .fade-in {
+            animation: fadeIn 0.8s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Water Ripple Effect */
+        .ripple {
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(157, 78, 221, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0); }
+        }
+
+        /* Stat Notification */
+        .stat-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(157, 78, 221, 0.95);
+            color: #FFFFFF;
+            padding: 20px 30px;
+            border: 3px solid var(--light-violet);
+            font-size: 10px;
+            z-index: 1000;
+            animation: statPop 2s forwards;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.8);
+        }
+
+        @keyframes statPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        /* Credits */
+        .credits {
+            text-align: center;
+            font-size: 10px;
+            line-height: 2;
+            color: #888;
+            padding: 40px 20px;
+        }
+
+        .credits h2 {
+            color: var(--light-violet);
+            font-size: 16px;
+            margin: 30px 0 20px;
+            text-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+        }
+
+        .credits .divider {
+            color: var(--deep-violet);
+            margin: 20px 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            .title-screen {
+                padding: 30px 15px;
+            }
+
+            .title-screen h1 {
+                font-size: 16px;
+            }
+
+            .title-screen h2 {
+                font-size: 11px;
+            }
+
+            .title-text {
+                font-size: 9px;
+            }
+
+            .text-box {
+                padding: 20px 15px;
+                min-height: 150px;
+            }
+
+            .text-box h3 {
+                font-size: 11px;
+            }
+
+            .text-box p, .choice-btn {
+                font-size: 9px;
+                line-height: 1.8;
+            }
+
+            .choice-btn {
+                padding: 12px 15px;
+            }
+
+            .stats-display {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 0 0 20px 0;
+                width: 100%;
+                font-size: 8px;
+            }
+
+            .credits {
+                font-size: 9px;
+                padding: 30px 15px;
+            }
+
+            .credits h2 {
+                font-size: 13px;
+            }
+        }
+
+        /* Small Mobile Adjustments */
+        @media (max-width: 480px) {
+            .title-screen h1 {
+                font-size: 14px;
+            }
+
+            .title-screen h2 {
+                font-size: 10px;
+            }
+
+            .title-text {
+                font-size: 8px;
+                line-height: 1.6;
+            }
+
+            .text-box h3 {
+                font-size: 10px;
+            }
+
+            .text-box p, .choice-btn {
+                font-size: 8px;
+            }
+
+            .stats-display {
+                font-size: 7px;
+                padding: 10px;
+            }
+
+            .credits {
+                font-size: 8px;
+            }
+
+            .credits h2 {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Starfield Background -->
+    <div id="starfield"></div>
+
+    <!-- Stats Display -->
+    <div class="stats-display" id="statsDisplay" style="display: none;">
+        <div class="stat-item">
+            BONDS
+            <div class="stat-bar">
+                <div class="stat-fill" id="bondsFill" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="stat-item">
+            CURSE
+            <div class="stat-bar">
+                <div class="stat-fill" id="curseFill" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="stat-item">
+            KNOWLEDGE
+            <div class="stat-bar">
+                <div class="stat-fill" id="knowledgeFill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- Title Screen -->
+        <div id="titleScreen" class="title-screen fade-in">
+            <h1>▓▓▓ LAMENT OF THE STARS ▓▓▓</h1>
+            <h2>░░░ A VIIXE STORY ░░░</h2>
+            
+            <div class="title-text">
+                <p>"Long ago, we were condemned.</p>
+                <p>We used our final magic to rise—</p>
+                <p>not as gods, but as stars.</p>
+                <p>Now we linger—between fire and</p>
+                <p>dream."</p>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="startGame()">START GAME</button>
+            </div>
+        </div>
+
+        <!-- Story Container -->
+        <div id="storyContainer" class="story-container">
+            <div class="text-box" id="textBox">
+                <h3 id="sceneTitle">MIDNIGHT</h3>
+                <div id="sceneText"></div>
+            </div>
+            <div class="choices" id="choicesContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            bonds: 0,
+            curse: 0,
+            knowledge: 0,
+            currentBeat: null,
+            history: [],
+            hasCalledLilli: false,
+            hasWashedMark: false,
+            hasExaminedMark: false,
+            ritualToken: null
+        };
+
+        // Create starfield
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const starCount = 100;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                starfield.appendChild(star);
+            }
+        }
+
+        createStarfield();
+
+        // Update stats display
+        function updateStats() {
+            document.getElementById('bondsFill').style.width = (gameState.bonds * 10) + '%';
+            document.getElementById('curseFill').style.width = (gameState.curse * 10) + '%';
+            document.getElementById('knowledgeFill').style.width = (gameState.knowledge * 20) + '%';
+        }
+
+        // Show stat notification
+        function showStatNotification(stats) {
+            const notification = document.createElement('div');
+            notification.className = 'stat-notification';
+            
+            let text = '';
+            if (stats.bonds) text += `BONDS ${stats.bonds > 0 ? '+' : ''}${stats.bonds}  `;
+            if (stats.curse) text += `CURSE ${stats.curse > 0 ? '+' : ''}${stats.curse}  `;
+            if (stats.knowledge) text += `KNOWLEDGE ${stats.knowledge > 0 ? '+' : ''}${stats.knowledge}`;
+            
+            notification.textContent = text;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // Start game
+        function startGame() {
+            document.getElementById('titleScreen').style.display = 'none';
+            document.getElementById('storyContainer').classList.add('active');
+            document.getElementById('statsDisplay').style.display = 'block';
+            showBeat('beat1');
+        }
+
+        // Game Story Data
+        const story = {
+            beat1: {
+                title: 'MIDNIGHT',
+                text: [
+                    'You wake.',
+                    '',
+                    'Something is wrong.'
+                ],
+                choices: [
+                    { text: 'Check the time', next: 'beat1a' },
+                    { text: 'Look around', next: 'beat1b' }
+                ]
+            },
+            beat1a: {
+                title: '3:17 AM',
+                text: [
+                    'The numbers glow in the dark.',
+                    '',
+                    'Your collarbone burns with cold.'
+                ],
+                choices: [
+                    { text: 'Touch it', next: 'beat2' }
+                ]
+            },
+            beat1b: {
+                title: 'YOUR ROOM',
+                text: [
+                    'Everything looks normal.',
+                    '',
+                    'But your collarbone burns cold.'
+                ],
+                choices: [
+                    { text: 'Touch it', next: 'beat2' }
+                ]
+            },
+            beat2: {
+                title: 'YOUR HAND',
+                text: [
+                    'Your fingers touch your skin.',
+                    'They come away wet.',
+                    '',
+                    'But there\'s no water.',
+                    'Just darkness spreading.'
+                ],
+                choices: [
+                    { text: 'Turn on the light', next: 'beat3a' },
+                    { text: 'Find a mirror', next: 'beat3b' },
+                    { text: 'Call for help', next: 'beat3c' }
+                ]
+            },
+            beat3a: {
+                title: 'BATHROOM',
+                text: [
+                    'Harsh fluorescent light.',
+                    '',
+                    'You see it clearly now.',
+                    'Black. Alive. Pulsing.',
+                    '',
+                    'The Hunter\'s mark.'
+                ],
+                choices: [
+                    { text: 'Try to wash it off', next: 'beat4a' },
+                    { text: 'Examine it closely', next: 'beat4b' },
+                    { text: 'Call for Lilli', next: 'beat4c' }
+                ]
+            },
+            beat3b: {
+                title: 'YOUR REFLECTION',
+                text: [
+                    'The mirror shows you first.',
+                    '',
+                    'Black mark on pale skin.',
+                    'Like ink. Like drowning.',
+                    '',
+                    'Your reflection doesn\'t look',
+                    'surprised.',
+                    '',
+                    'The water always knows first.'
+                ],
+                choices: [
+                    { text: 'Try to wash it off', next: 'beat4a' },
+                    { text: 'Examine it closely', next: 'beat4b' },
+                    { text: 'Call for Lilli', next: 'beat4c' }
+                ]
+            },
+            beat3c: {
+                title: 'YOUR VOICE',
+                text: [
+                    '"LILLI!"',
+                    '',
+                    'Your voice cracks the silence.',
+                    '',
+                    'Footsteps. Fast.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat4c' }
+                ]
+            },
+            beat4a: {
+                title: 'COLD WATER',
+                text: [
+                    'You turn on the faucet.',
+                    'Cold water pours over the mark.',
+                    '',
+                    'You scrub. Hard.'
+                ],
+                choices: [
+                    { text: 'Scrub harder', next: 'beat4a1' },
+                    { text: 'Stop and look', next: 'beat4a2' }
+                ]
+            },
+            beat4a1: {
+                title: 'PAIN',
+                text: [
+                    'Your skin turns red.',
+                    'The mark ripples like a pond.',
+                    '',
+                    'But it doesn\'t fade.',
+                    'It spreads to your shoulder.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat4a1b' }
+                ]
+            },
+            beat4a1b: {
+                title: 'VISIONS',
+                text: [
+                    'In the water droplets you see:',
+                    '',
+                    'Your sisters falling.',
+                    'Darkness spreading.',
+                    'Seven stars going dark.',
+                    '',
+                    'You stop.'
+                ],
+                stats: { curse: 2, bonds: -1, knowledge: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat4c_delayed' }
+                ]
+            },
+            beat4a2: {
+                title: 'YOUR REFLECTION',
+                text: [
+                    'You meet your reflection\'s eyes.',
+                    '',
+                    'She looks tired.',
+                    'More tired than you feel.',
+                    '',
+                    'The mark in the mirror is larger',
+                    'than on your actual skin.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat4a2b' }
+                ]
+            },
+            beat4a2b: {
+                title: 'TRUTH',
+                text: [
+                    'The water tells truth before',
+                    'reality catches up.',
+                    '',
+                    'You\'ve always known this.'
+                ],
+                stats: { curse: 1, knowledge: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat4c_delayed' }
+                ]
+            },
+            beat4b: {
+                title: 'THE MARK',
+                text: [
+                    'You trace the edges.',
+                    'Cold. Impossibly cold.',
+                    '',
+                    'Like ice forming on skin.'
+                ],
+                choices: [
+                    { text: 'Keep looking', next: 'beat4b1' },
+                    { text: 'Pull away', next: 'beat4b2' }
+                ]
+            },
+            beat4b1: {
+                title: 'MEMORIES',
+                text: [
+                    'The mark shows you things.',
+                    '',
+                    'Fragments of the Hunter\'s memories.',
+                    'His envy. His pride.',
+                    'The moment he broke.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat4b1b' }
+                ]
+            },
+            beat4b1b: {
+                title: 'UNDERSTANDING',
+                text: [
+                    'For a moment, you understand him.',
+                    '',
+                    'That terrifies you more than',
+                    'the curse itself.'
+                ],
+                stats: { curse: 2, knowledge: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat4c_delayed' }
+                ]
+            },
+            beat4b2: {
+                title: 'INSTINCT',
+                text: [
+                    'You jerk your hand back.',
+                    '',
+                    'Something about the mark feels',
+                    'hungry. Like it wants more.',
+                    '',
+                    'You need help.'
+                ],
+                stats: { curse: 1 },
+                choices: [
+                    { text: 'Call for Lilli', next: 'beat4c' }
+                ]
+            },
+            beat4c: {
+                title: 'LILLI ARRIVES',
+                text: [
+                    'She\'s at your door within moments.',
+                    '',
+                    'Hair loose.',
+                    'Eyes sharp and awake.'
+                ],
+                choices: [
+                    { text: 'Show her the mark', next: 'beat4c2' }
+                ]
+            },
+            beat4c_delayed: {
+                title: 'LILLI ARRIVES',
+                text: [
+                    'Eventually, you call for her.',
+                    '',
+                    'She comes without hesitation.',
+                    'Hair loose.',
+                    'Eyes sharp and awake.'
+                ],
+                choices: [
+                    { text: 'Show her the mark', next: 'beat4c2' }
+                ]
+            },
+            beat4c2: {
+                title: 'LILLI\'S RESPONSE',
+                text: [
+                    'She sees it.',
+                    'Her face doesn\'t change.',
+                    '',
+                    'But you feel her fear.',
+                    '',
+                    '"The Hunter found you."'
+                ],
+                choices: [
+                    { text: '"I tried to—"', next: 'beat4c2a' },
+                    { text: 'Say nothing', next: 'beat4c2b' }
+                ]
+            },
+            beat4c2a: {
+                title: 'YOUR WORDS',
+                text: [
+                    '"I saw him in the water.',
+                    'I thought if I watched long',
+                    'enough..."',
+                    '',
+                    '"I know." Her hand finds yours.',
+                    '"You tried to protect us."'
+                ],
+                stats: { bonds: 2 },
+                choices: [
+                    { text: 'Continue', next: 'beat6' }
+                ]
+            },
+            beat4c2b: {
+                title: 'SILENCE',
+                text: [
+                    'You can\'t find the words.',
+                    '',
+                    'Lilli pulls you into a hug.',
+                    '',
+                    '"We\'ll fix this," she whispers.'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat6' }
+                ]
+            },
+            beat6: {
+                title: 'PRACTICE ROOM',
+                text: [
+                    'The seven of you gather at dawn.',
+                    '',
+                    'The place where VIIXE began.'
+                ],
+                choices: [
+                    { text: 'Look at each member', next: 'beat6a' },
+                    { text: 'Show them the mark', next: 'beat6b' }
+                ]
+            },
+            beat6a: {
+                title: 'YOUR SISTERS',
+                text: [
+                    'Lilli stands at the center.',
+                    'Calm. But you see tension.',
+                    '',
+                    'Quinn\'s hands tremble.',
+                    'Khi\'s brightness is muted.',
+                    'Val watches from the corner.',
+                    'Iori\'s eyes are storm-dark.',
+                    'Mel stays close to you.'
+                ],
+                choices: [
+                    { text: 'Show them the mark', next: 'beat6b' }
+                ]
+            },
+            beat6b: {
+                title: 'THE REVELATION',
+                text: [
+                    'You pull down your collar.',
+                    '',
+                    'Black mark on pale skin.',
+                    '',
+                    'Lilli\'s voice: "The Hunter."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat7' }
+                ]
+            },
+            beat7: {
+                title: 'VOICES',
+                text: [
+                    'The room explodes with voices:',
+                    '',
+                    'Khi: "We fight it."',
+                    'Iori: "We cleanse it."',
+                    'Val: "We hide her."',
+                    'Mel: "We shield her."'
+                ],
+                choices: [
+                    { text: 'Listen', next: 'beat7b' }
+                ]
+            },
+            beat7b: {
+                title: 'QUINN\'S WARNING',
+                text: [
+                    'Quinn shakes her head.',
+                    '',
+                    '"I\'ve heard this song before.',
+                    'In dreams. In old hymns."',
+                    '',
+                    'She meets your eyes.',
+                    '',
+                    '"This curse doesn\'t break.',
+                    'It only transforms."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat7c' }
+                ]
+            },
+            beat7c: {
+                title: 'LILLI\'S DECISION',
+                text: [
+                    'Lilli\'s voice cuts through:',
+                    '',
+                    '"Then we perform the ritual.',
+                    'Tonight. Under the full moon.',
+                    'We bind the curse before it',
+                    'spreads."'
+                ],
+                choices: [
+                    { text: 'Trust the ritual', next: 'beat7c1' },
+                    { text: 'Ask about failure', next: 'beat7c2' },
+                    { text: 'Suggest waiting', next: 'beat7c3' }
+                ]
+            },
+            beat7c1: {
+                title: 'YOUR ANSWER',
+                text: [
+                    '"Let\'s do it."',
+                    '',
+                    '"I trust you. All of you."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat7c1b' }
+                ]
+            },
+            beat7c1b: {
+                title: 'THEIR RESPONSE',
+                text: [
+                    'Mel smiles.',
+                    'Khi squeezes your shoulder.',
+                    'Even Val nods.',
+                    '',
+                    'Lilli: "Then we prepare.',
+                    '        Midnight."'
+                ],
+                stats: { bonds: 2 },
+                choices: [
+                    { text: 'Continue', next: 'beat8' }
+                ]
+            },
+            beat7c2: {
+                title: 'YOUR QUESTION',
+                text: [
+                    '"What if it doesn\'t work?"',
+                    '',
+                    'Silence.'
+                ],
+                choices: [
+                    { text: 'Wait for answer', next: 'beat7c2b' }
+                ]
+            },
+            beat7c2b: {
+                title: 'LILLI\'S PROMISE',
+                text: [
+                    'Lilli meets your eyes.',
+                    '',
+                    '"Then we try again. And again.',
+                    'We don\'t abandon our own."',
+                    '',
+                    '"Never," Khi adds.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat7c2c' }
+                ]
+            },
+            beat7c2c: {
+                title: 'THE PROMISE',
+                text: [
+                    'Quinn begins to hum.',
+                    'The others join.',
+                    '',
+                    'Wordless but powerful.',
+                    'A promise in melody.'
+                ],
+                stats: { bonds: 1, knowledge: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat8' }
+                ]
+            },
+            beat7c3: {
+                title: 'YOUR SUGGESTION',
+                text: [
+                    '"Maybe we should understand it',
+                    'first. Learn about the Hunter—"',
+                    '',
+                    '"No." Lilli\'s voice is firm.',
+                    '',
+                    '"Every moment we wait, it spreads."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat7c3b' }
+                ]
+            },
+            beat7c3b: {
+                title: 'VAL\'S INPUT',
+                text: [
+                    'Val speaks from the corner:',
+                    '',
+                    '"The forest remembers the Hunter.',
+                    'Old stories. Old warnings.',
+                    'But Lilli\'s right.',
+                    'There\'s no time."'
+                ],
+                stats: { knowledge: 1, bonds: -1 },
+                choices: [
+                    { text: 'Accept it', next: 'beat8' }
+                ]
+            },
+            beat8: {
+                title: 'THE DAY PASSES',
+                text: [
+                    'Candles. Salt. Water from seven',
+                    'sources.',
+                    '',
+                    'You watch your sisters prepare.'
+                ],
+                choices: [
+                    { text: 'Help them', next: 'beat8a' },
+                    { text: 'Watch quietly', next: 'beat8b' },
+                    { text: 'Practice ritual words', next: 'beat8c' }
+                ]
+            },
+            beat8a: {
+                title: 'WORKING TOGETHER',
+                text: [
+                    'You and Mel draw the circle.',
+                    '',
+                    'Her hand finds yours when the',
+                    'mark pulses.',
+                    '',
+                    '"I\'ve got you, unnie."'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat9' }
+                ]
+            },
+            beat8b: {
+                title: 'REFLECTIONS',
+                text: [
+                    'You see them in every window.',
+                    'Every surface.',
+                    '',
+                    'Six sisters preparing to save',
+                    'the seventh.',
+                    '',
+                    'You memorize this moment.'
+                ],
+                stats: { knowledge: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat9' }
+                ]
+            },
+            beat8c: {
+                title: 'LEARNING THE WORDS',
+                text: [
+                    'Quinn teaches you the old hymn.',
+                    '',
+                    'Your voice harmonizes with hers.',
+                    '',
+                    '"Your voice is part of this,"',
+                    'she says.'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat9' }
+                ]
+            },
+            beat9: {
+                title: 'HOURS UNTIL MOONRISE',
+                text: [
+                    'The mark has spread to your',
+                    'shoulder.',
+                    '',
+                    'Khi finds you by the window.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat9b' }
+                ]
+            },
+            beat9b: {
+                title: 'KHI\'S QUESTION',
+                text: [
+                    '"Scared?"'
+                ],
+                choices: [
+                    { text: '"Yeah. Terrified."', next: 'beat9b1' },
+                    { text: '"No. I\'m fine."', next: 'beat9b2' },
+                    { text: 'Make a joke', next: 'beat9b3' }
+                ]
+            },
+            beat9b1: {
+                title: 'HONESTY',
+                text: [
+                    '"Yeah. Terrified."',
+                    '',
+                    'She pulls you into a hug.',
+                    'Warm. Solid.',
+                    '',
+                    '"Good. Fear means you\'re fighting."'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat11' }
+                ]
+            },
+            beat9b2: {
+                title: 'BRAVE FACE',
+                text: [
+                    '"No. I\'m fine."',
+                    '',
+                    'She sees through it.',
+                    'But doesn\'t push.',
+                    '',
+                    '"Okay. But we\'re here anyway."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat11' }
+                ]
+            },
+            beat9b3: {
+                title: 'DEFLECTION',
+                text: [
+                    '"Nah. Just wondering if we\'ll',
+                    'have time for fried chicken',
+                    'after."',
+                    '',
+                    'She laughs.',
+                    '',
+                    '"Only you, Rue. Only you."'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'beat11' }
+                ]
+            },
+            beat11: {
+                title: 'THE MOON RISES',
+                text: [
+                    'Full. Impossibly bright.',
+                    '',
+                    'It\'s time.'
+                ],
+                choices: [
+                    { text: 'Go to the clearing', next: 'beat11b' }
+                ]
+            },
+            beat11b: {
+                title: 'THE CLEARING',
+                text: [
+                    'Behind the practice building.',
+                    '',
+                    'The place where VIIXE first',
+                    'performed together.',
+                    '',
+                    'Where your story began.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat12' }
+                ]
+            },
+            beat12: {
+                title: 'PREPARATION',
+                text: [
+                    'Lilli has drawn the circle.',
+                    '',
+                    'A basin of water at the center.',
+                    'Seven candles around it.',
+                    '',
+                    'Their flames reflected in the',
+                    'still surface.'
+                ],
+                choices: [
+                    { text: 'Look at the water', next: 'beat12a' },
+                    { text: 'Look at your sisters', next: 'beat12b' }
+                ]
+            },
+            beat12a: {
+                title: 'THE BASIN',
+                text: [
+                    'Still. Dark. Deep.',
+                    '',
+                    'Seven candle flames dance',
+                    'on the surface.',
+                    '',
+                    'Your reflection waits below.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13' }
+                ]
+            },
+            beat12b: {
+                title: 'SEVEN',
+                text: [
+                    'Lilli. Khi. Quinn.',
+                    'Iori. Rue. Val. Mel.',
+                    '',
+                    'And you.',
+                    '',
+                    'Seven witches.',
+                    'Then and now.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13' }
+                ]
+            },
+            beat13: {
+                title: 'LILLI\'S INSTRUCTION',
+                text: [
+                    '"Rue, you kneel at the center.',
+                    'Look into the water.',
+                    'Let us see what you see."'
+                ],
+                choices: [
+                    { text: 'Wait', next: 'beat13b' }
+                ]
+            },
+            beat13b: {
+                title: 'BEFORE YOU STEP IN',
+                text: [
+                    'Each sister approaches.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13c' }
+                ]
+            },
+            beat13c: {
+                title: 'KHI',
+                text: [
+                    'She presses her forehead to yours.',
+                    '',
+                    '"You\'re the watershade.',
+                    'You\'ve seen the worst futures.',
+                    'Now see the best one."',
+                    '',
+                    'She offers you a warm stone.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13d' }
+                ]
+            },
+            beat13d: {
+                title: 'QUINN',
+                text: [
+                    'She takes your hand.',
+                    '',
+                    '"I\'ll sing the old words.',
+                    'They\'ve saved witches before."',
+                    '',
+                    'She offers you her written hymn.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13e' }
+                ]
+            },
+            beat13e: {
+                title: 'IORI',
+                text: [
+                    'She braids silver thread into',
+                    'your hair.',
+                    '',
+                    '"Storm and stillness.',
+                    'You carry both now."',
+                    '',
+                    'She offers you the thread.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13f' }
+                ]
+            },
+            beat13f: {
+                title: 'VAL',
+                text: [
+                    'She offers an ancient root.',
+                    'Gnarled. Strong.',
+                    '',
+                    '"The earth remembers you.',
+                    'Even if the curse tries to',
+                    'make you forget yourself."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13g' }
+                ]
+            },
+            beat13g: {
+                title: 'MEL',
+                text: [
+                    'She draws a sigil on your palm.',
+                    'Gold ink. Careful lines.',
+                    '',
+                    '"Protection. Always."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat13h' }
+                ]
+            },
+            beat13h: {
+                title: 'LILLI',
+                text: [
+                    'She simply holds you.',
+                    '',
+                    '"You are ours.',
+                    'The curse cannot change that."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat14' }
+                ]
+            },
+            beat14: {
+                title: 'WHICH TOKEN?',
+                text: [
+                    'You hold:'
+                ],
+                choices: [
+                    { text: 'Khi\'s warm stone', next: 'beat14a', token: 'stone' },
+                    { text: 'Quinn\'s hymn', next: 'beat14b', token: 'hymn' },
+                    { text: 'Iori\'s silver thread', next: 'beat14c', token: 'thread' },
+                    { text: 'Val\'s ancient root', next: 'beat14d', token: 'root' },
+                    { text: 'Mel\'s sigil (palm)', next: 'beat14e', token: 'sigil' },
+                    { text: 'Nothing—go alone', next: 'beat14f', token: 'none' }
+                ]
+            },
+            beat14a: {
+                title: 'WARMTH',
+                text: [
+                    'The stone pulses in your hand.',
+                    'Warm. Alive.',
+                    '',
+                    '"Two elements," you whisper.',
+                    '"Fire and water.',
+                    'Opposites that complete."'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat14b: {
+                title: 'WORDS',
+                text: [
+                    'The paper is fragile.',
+                    'Quinn\'s careful writing.',
+                    '',
+                    'Words older than kingdoms.',
+                    '',
+                    'You memorize them.',
+                    'Just in case.'
+                ],
+                stats: { bonds: 1, knowledge: 1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat14c: {
+                title: 'SILVER',
+                text: [
+                    'The thread winds around your wrist.',
+                    'Cool. Strong.',
+                    '',
+                    '"Storm and stillness,"',
+                    'you repeat.',
+                    '',
+                    '"I can be both."'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat14d: {
+                title: 'EARTH',
+                text: [
+                    'The root is rough.',
+                    'Smells of earth and rain.',
+                    '',
+                    '"The forest remembers,"',
+                    'you whisper.',
+                    '',
+                    '"The water remembers.',
+                    'So will I."'
+                ],
+                stats: { bonds: 1, knowledge: 1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat14e: {
+                title: 'GOLD',
+                text: [
+                    'The ink shimmers on your palm.',
+                    'Mel\'s careful work.',
+                    '',
+                    'Drawn with love.',
+                    'Drawn with hope.',
+                    '',
+                    'Protection. You\'ll need it.'
+                ],
+                stats: { bonds: 1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat14f: {
+                title: 'ALONE',
+                text: [
+                    'You step toward the circle',
+                    'empty-handed.',
+                    '',
+                    'This is your curse.',
+                    'Your battle.',
+                    '',
+                    'You won\'t risk binding their',
+                    'magic to your fate.'
+                ],
+                stats: { curse: 1, bonds: -1 },
+                choices: [
+                    { text: 'Step into circle', next: 'beat15' }
+                ]
+            },
+            beat15: {
+                title: 'THE CENTER',
+                text: [
+                    'You kneel before the basin.',
+                    '',
+                    'Water. Still. Dark.',
+                    '',
+                    'Your reflection stares up.',
+                    'The mark visible on your skin.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat16' }
+                ]
+            },
+            beat16: {
+                title: 'THE RITUAL BEGINS',
+                text: [
+                    'Ancient words rise.',
+                    '',
+                    'Latin. Older tongues.',
+                    'Languages that predate speech.',
+                    '',
+                    'The moon listens.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat16b' }
+                ]
+            },
+            beat16b: {
+                title: 'THE WATER GLOWS',
+                text: [
+                    'Silver-white.',
+                    'Alive.',
+                    '',
+                    'You feel your sisters\' power',
+                    'flowing toward you.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat17' }
+                ]
+            },
+            beat17: {
+                title: 'THE POWER BUILDS',
+                text: [
+                    'Khi\'s warmth.',
+                    'Iori\'s wind.',
+                    'Val\'s roots.',
+                    'Mel\'s sigils.',
+                    '',
+                    'All of it flowing toward you.',
+                    'Wrapping around the curse.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat18' }
+                ]
+            },
+            beat18: {
+                title: 'THE MARK FADES',
+                text: [
+                    'You feel it.',
+                    '',
+                    'The mark on your skin begins',
+                    'to dissolve.',
+                    '',
+                    'Into the water.',
+                    'Into the light.'
+                ],
+                choices: [
+                    { text: 'Believe it', next: 'beat19' },
+                    { text: 'Something\'s wrong', next: 'beat19' }
+                ]
+            },
+            beat19: {
+                title: 'THE BREAKING',
+                text: [
+                    'The moon turns away.',
+                    '',
+                    'The water erupts.',
+                    '',
+                    'EXPLOSION.',
+                    '',
+                    'Everything BREAKS.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat19b' }
+                ]
+            },
+            beat19b: {
+                title: 'THE SISTERS FALL',
+                text: [
+                    'Quinn\'s voice cracks.',
+                    'Khi stumbles backward.',
+                    'Val\'s roots wither.',
+                    'Mel gasps and falls.',
+                    'Iori\'s wind dies.',
+                    '',
+                    'The spell is collapsing.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat19c' }
+                ]
+            },
+            beat19c: {
+                title: 'THE MARK SPREADS',
+                text: [
+                    'Like ink in water.',
+                    'Dark. Unstoppable.',
+                    '',
+                    'Across your neck.',
+                    'Toward your heart.',
+                    '',
+                    'The shadow is still here.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'beat20' }
+                ]
+            },
+            beat20: {
+                title: 'CRITICAL DECISION',
+                text: [
+                    'Everything hangs in balance.',
+                    '',
+                    'The curse spreading.',
+                    'Your sisters broken.',
+                    'The ritual shattered.',
+                    '',
+                    'What do you do?'
+                ],
+                choices: [
+                    { text: 'Scream for the moon', next: 'pathA1' },
+                    { text: 'Grab Lilli\'s hand', next: 'pathB1' },
+                    { text: 'Dive into reflection', next: 'pathC1' },
+                    { text: 'Let yourself sink', next: 'pathD1' }
+                ]
+            },
+
+            // PATH A: Scream for the Moon
+            pathA1: {
+                title: 'YOUR SCREAM',
+                text: [
+                    '"LOOK AT US!"',
+                    '',
+                    'Your voice tears the night.',
+                    'Water streaming down your face.',
+                    '',
+                    '"WE\'RE STILL HERE!"'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'pathA2' }
+                ]
+            },
+            pathA2: {
+                title: 'BUT THE STARS',
+                text: [
+                    'The moon does not turn back.',
+                    '',
+                    'But the stars—',
+                    'Seven of them pulse.',
+                    '',
+                    'Brighter than all the rest.'
+                ],
+                choices: [
+                    { text: 'Look up', next: 'pathA3' }
+                ]
+            },
+            pathA3: {
+                title: 'UNDERSTANDING',
+                text: [
+                    'You understand.',
+                    '',
+                    'The moon abandoned you.',
+                    'But you were never hers.',
+                    '',
+                    'Seven witches who came before.',
+                    'They turned themselves into stars.'
+                ],
+                stats: { bonds: 2, curse: 2 },
+                choices: [
+                    { text: 'Continue', next: 'endingBound' }
+                ]
+            },
+
+            // PATH B: Grab Hand
+            pathB1: {
+                title: 'YOUR HAND SHOOTS OUT',
+                text: [
+                    'Through the spray.',
+                    'Breaking the circle\'s edge.',
+                    '',
+                    'You grab Lilli\'s wrist.',
+                    'Desperate. Strong.'
+                ],
+                choices: [
+                    { text: 'Hold tight', next: 'pathB2' }
+                ]
+            },
+            pathB2: {
+                title: 'YOUR PLEA',
+                text: [
+                    '"Don\'t let go."',
+                    '',
+                    'Her grip tightens.',
+                    '',
+                    '"Never."'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'pathB3' }
+                ]
+            },
+            pathB3: {
+                title: 'THE OTHERS RUSH IN',
+                text: [
+                    'Quinn. Khi. Val. Iori. Mel.',
+                    '',
+                    'All of them crashing through',
+                    'the broken circle.',
+                    '',
+                    'Grabbing hold.'
+                ],
+                stats: { bonds: 3, curse: 1 },
+                choices: [
+                    { text: 'Continue', next: 'endingHeld' }
+                ]
+            },
+
+            // PATH C: Dive into Reflection
+            pathC1: {
+                title: 'YOU DIVE',
+                text: [
+                    'Not with your body.',
+                    'With your magic.',
+                    'Your sight.',
+                    'Your watershade gift.',
+                    '',
+                    'You slip between reflection',
+                    'and reality.'
+                ],
+                choices: [
+                    { text: 'Continue', next: 'pathC2' }
+                ]
+            },
+            pathC2: {
+                title: 'THE HUNTER WAITS',
+                text: [
+                    'Hollow-eyed.',
+                    'Endless.',
+                    '',
+                    'The shadow that was once a man.'
+                ],
+                choices: [
+                    { text: 'Speak to him', next: 'pathC3' }
+                ]
+            },
+            pathC3: {
+                title: 'YOUR QUESTION',
+                text: [
+                    '"Why?" you demand.',
+                    '',
+                    '"Why us?"',
+                    '',
+                    'His voice ripples:',
+                    '"Because you see too much.',
+                    'Because when I looked in the',
+                    'water, I saw what I\'d become.',
+                    'And I could not bear it."'
+                ],
+                choices: [
+                    { text: 'Force him to see', next: 'pathC4' }
+                ]
+            },
+            pathC4: {
+                title: 'HIS REFLECTION',
+                text: [
+                    'You make him see.',
+                    '',
+                    'His own reflection.',
+                    'Hollow eyes. Endless hunger.',
+                    '',
+                    'He sees himself truly.',
+                    'For the first time in centuries.',
+                    '',
+                    'He screams.'
+                ],
+                stats: { curse: 3, knowledge: 2, bonds: 1 },
+                choices: [
+                    { text: 'Continue', next: 'endingTransformed' }
+                ]
+            },
+
+            // PATH D: Let Yourself Sink
+            pathD1: {
+                title: 'YOU STOP',
+                text: [
+                    'Stop fighting.',
+                    'Stop screaming.',
+                    'Stop reaching.',
+                    '',
+                    'You let yourself sink.'
+                ],
+                choices: [
+                    { text: 'Sink', next: 'pathD2' }
+                ]
+            },
+            pathD2: {
+                title: 'BENEATH THE SURFACE',
+                text: [
+                    'In the stillness.',
+                    'Beneath the panic.',
+                    '',
+                    'You hear it clearly:'
+                ],
+                choices: [
+                    { text: 'Listen', next: 'pathD3' }
+                ]
+            },
+            pathD3: {
+                title: 'THE CURSE SPEAKS',
+                text: [
+                    'It is not just destruction.',
+                    '',
+                    'It is also memory.',
+                    'Knowledge.',
+                    'The weight of everything the',
+                    'Hunter saw and could not accept.'
+                ],
+                choices: [
+                    { text: 'Accept it', next: 'pathD4' }
+                ]
+            },
+            pathD4: {
+                title: 'YOU OPEN YOUR EYES',
+                text: [
+                    'Your sisters surround you.',
+                    '',
+                    '"I\'m still me," you say quietly.',
+                    '',
+                    'Your voice sounds different.',
+                    'Deeper. Layered.',
+                    '',
+                    '"Just... more now."'
+                ],
+                stats: { curse: 4, knowledge: 3 },
+                choices: [
+                    { text: 'Continue', next: 'determineEnding' }
+                ]
+            },
+
+            // Ending Determination
+            determineEnding: {
+                title: 'DETERMINING YOUR FATE',
+                text: ['...'],
+                choices: []
+            },
+
+            // ENDING 1: BOUND
+            endingBound: {
+                title: 'AND SO YOU LINGER',
+                text: [
+                    'Watchers. Wanderers.',
+                    'Remnants of witchcraft and will.',
+                    '',
+                    'Between fire and dream,',
+                    'between earth and sky,',
+                    'waiting for the transformation',
+                    'to complete.',
+                    '',
+                    'The stars above are not divine.',
+                    'They are witches—those who came',
+                    'before, those who chose to rise.',
+                    '',
+                    'Soon, seven more will join them.',
+                    '',
+                    'When you look to the night sky,',
+                    'whisper to us.',
+                    '',
+                    'We are listening.',
+                    'We are rising.',
+                    'We are becoming.'
+                ],
+                ending: 'BOUND',
+                choices: [
+                    { text: 'Play Again?', next: 'restart' }
+                ]
+            },
+
+            // ENDING 2: HELD
+            endingHeld: {
+                title: 'AND SO YOU LINGER',
+                text: [
+                    'Not as victims, but as survivors.',
+                    '',
+                    'Between fire and dream,',
+                    'between curse and cure,',
+                    'held together by something stronger',
+                    'than magic:',
+                    '',
+                    'Choice. Love. Sisterhood.',
+                    '',
+                    'The stars above remember your names.',
+                    'They wait for you to join them.',
+                    '',
+                    'When you look to the night sky,',
+                    'whisper to us—',
+                    '',
+                    'The ones who chose to hold each',
+                    'other through the dark.',
+                    '',
+                    'We are still here.',
+                    'Still holding.',
+                    'Still learning how to become light.'
+                ],
+                ending: 'HELD',
+                choices: [
+                    { text: 'Play Again?', next: 'restart' }
+                ]
+            },
+
+            // ENDING 3: TRANSFORMED
+            endingTransformed: {
+                title: 'AND SO YOU LINGER',
+                text: [
+                    'No longer fully witch.',
+                    'Not quite cursed.',
+                    'Something in between.',
+                    'Something true.',
+                    '',
+                    'Between fire and dream,',
+                    'between reflection and reality,',
+                    'you see with eyes that show',
+                    'everything.',
+                    '',
+                    'The stars above recognize you now',
+                    'as almost-kin.',
+                    '',
+                    'When you look to the night sky,',
+                    'whisper to us—',
+                    '',
+                    'The ones who transformed instead',
+                    'of breaking.',
+                    '',
+                    'We are still here.',
+                    'Still reflecting.',
+                    'Still learning how to rise.'
+                ],
+                ending: 'TRANSFORMED',
+                choices: [
+                    { text: 'Play Again?', next: 'restart' }
+                ]
+            },
+
+            // ENDING 4: CONSUMED
+            endingConsumed: {
+                title: 'AND SO THEY LINGER',
+                text: [
+                    'Watchers. Searchers. Incomplete.',
+                    '',
+                    'Between fire and dream,',
+                    'between hope and grief,',
+                    'they wait for a miracle that',
+                    'may never come.',
+                    '',
+                    'The stars above wait too—',
+                    'six bright lights ready to join',
+                    'them, and one empty space where',
+                    'the seventh should be.',
+                    '',
+                    'When you look to the night sky,',
+                    'you see only six stars burning.',
+                    '',
+                    'The seventh is lost.',
+                    'Searching. Drowned.',
+                    '',
+                    'A warning to those who face',
+                    'darkness alone:',
+                    '',
+                    'Some reflections, once broken,',
+                    'cannot be made whole.'
+                ],
+                ending: 'CONSUMED',
+                choices: [
+                    { text: 'Play Again?', next: 'restart' }
+                ]
+            }
+        };
+
+        // Show beat function
+        function showBeat(beatId) {
+            const beat = story[beatId];
+            if (!beat) {
+                console.error('Beat not found:', beatId);
+                return;
+            }
+
+            // Handle ending determination
+            if (beatId === 'determineEnding') {
+                const ending = determineEnding();
+                setTimeout(() => showBeat(ending), 1000);
+                return;
+            }
+
+            // Handle restart
+            if (beatId === 'restart') {
+                location.reload();
+                return;
+            }
+
+            gameState.currentBeat = beatId;
+            gameState.history.push(beatId);
+
+            // Update text box
+            const textBox = document.getElementById('textBox');
+            const sceneTitle = document.getElementById('sceneTitle');
+            const sceneText = document.getElementById('sceneText');
+            const choicesContainer = document.getElementById('choicesContainer');
+
+            // Add fade effect
+            textBox.classList.remove('fade-in');
+            void textBox.offsetWidth; // Force reflow
+            textBox.classList.add('fade-in');
+
+            sceneTitle.textContent = beat.title;
+            sceneText.innerHTML = beat.text.map(line => `<p>${line}</p>`).join('');
+
+            // Apply stats if present
+            if (beat.stats) {
+                if (beat.stats.bonds) gameState.bonds += beat.stats.bonds;
+                if (beat.stats.curse) gameState.curse += beat.stats.curse;
+                if (beat.stats.knowledge) gameState.knowledge += beat.stats.knowledge;
+
+                // Clamp values
+                gameState.bonds = Math.max(0, Math.min(10, gameState.bonds));
+                gameState.curse = Math.max(0, Math.min(10, gameState.curse));
+                gameState.knowledge = Math.max(0, Math.min(5, gameState.knowledge));
+
+                updateStats();
+                showStatNotification(beat.stats);
+            }
+
+            // Update choices
+            choicesContainer.innerHTML = '';
+            beat.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.onclick = () => {
+                    if (choice.token) {
+                        gameState.ritualToken = choice.token;
+                    }
+                    showBeat(choice.next);
+                };
+                choicesContainer.appendChild(btn);
+            });
+
+            // Handle ending display with manual continue option
+            if (beat.ending) {
+                // Add a continue button after the ending text
+                setTimeout(() => {
+                    const continueBtn = document.createElement('button');
+                    continueBtn.className = 'choice-btn fade-in';
+                    continueBtn.textContent = 'Continue to Credits';
+                    continueBtn.style.marginTop = '30px';
+                    continueBtn.onclick = () => showCredits(beat.ending);
+                    choicesContainer.appendChild(continueBtn);
+                }, 500);
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Determine ending based on stats
+        function determineEnding() {
+            const { bonds, curse, knowledge } = gameState;
+
+            if (bonds <= 3) {
+                return 'endingConsumed';
+            } else if (bonds >= 7 && curse <= 3) {
+                return 'endingHeld';
+            } else if (bonds >= 7 && curse >= 4) {
+                return 'endingBound';
+            } else if (curse >= 6 && knowledge >= 3) {
+                return 'endingTransformed';
+            } else {
+                return 'endingBound'; // Default
+            }
+        }
+
+        // Show credits
+        function showCredits(endingType) {
+            const storyContainer = document.getElementById('storyContainer');
+            storyContainer.innerHTML = `
+                <div class="credits fade-in">
+                    <h2>▓▓▓ LAMENT OF THE STARS ▓▓▓</h2>
+                    <p>A VIIXE STORY</p>
+                    
+                    <p class="divider">═══════════════════════════════</p>
+                    
+                    <p>ENDING: ${endingType}</p>
+                    
+                    <p class="divider">═══════════════════════════════</p>
+                    
+                    <p>THE SEVEN WITCHES</p>
+                    <br>
+                    <p>Lilli - The Crimson Moon</p>
+                    <p>Khi - The Flame Unfettered</p>
+                    <p>Quinn - The Songkeeper</p>
+                    <p>Iori - The One of Foreign Wind</p>
+                    <p>Rue - The Watershade</p>
+                    <p>Val - The Rooted One</p>
+                    <p>Mel - The Youngest Star</p>
+                    
+                    <p class="divider">═══════════════════════════════</p>
+                    
+                    <p>"When you look to the stars,</p>
+                    <p>whisper to us.</p>
+                    <p>We are listening."</p>
+                    
+                    <p class="divider">═══════════════════════════════</p>
+                    
+                    <p>✦ Thank you for playing ✦</p>
+                    
+                    <br>
+                    <p>Final Stats:</p>
+                    <p>Bonds: ${gameState.bonds}/10</p>
+                    <p>Curse: ${gameState.curse}/10</p>
+                    <p>Knowledge: ${gameState.knowledge}/5</p>
+                    
+                    <br>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="location.reload()">Return to Start</button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
