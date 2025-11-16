@@ -95,13 +95,7 @@ The game features **4 distinct endings** determined by your choices:
 - **HTML5** - Structure
 - **CSS3** - Styling and animations
 - **Vanilla JavaScript** - Game logic and interactivity
-
-### Browser Compatibility
-- ✅ Chrome/Edge (90+)
-- ✅ Firefox (88+)
-- ✅ Safari (14+)
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
-
+  
 ---
 
 ##  Credits
