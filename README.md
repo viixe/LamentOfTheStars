@@ -1,4 +1,4 @@
-# 🌙 Lament of Stars: A VIIXE Story
+# 🌙 Lament of the Stars: A VIIXE Story
 
 > *"Long ago, we were condemned. We used our final magic to rise—not as gods, but as stars. Now we linger—between fire and dream."*
 
@@ -8,23 +8,23 @@ An interactive text-based narrative game with pixel art aesthetics, telling the 
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🎮 **Gameplay**
+###  **Gameplay**
 - **Branching Narrative**: 35-40 meaningful decision points that shape your story
 - **Multiple Endings**: 4 unique endings based on your choices (Bound, Held, Transformed, Consumed)
 - **Stat System**: Track Bonds, Curse, and Knowledge as they influence your fate
 - **Replayability**: Discover different paths and outcomes across multiple playthroughs
 - **15-25 minutes** of gameplay per playthrough
 
-### 🎨 **Design**
+###  **Design**
 - **Retro Pixel Art Aesthetic**: 8-bit/16-bit inspired visual style
 - **Dark Dreamy Atmosphere**: Deep violet and black color palette
 - **Animated Starfield**: Twinkling pixel stars in the background
 - **Custom Pixel Font**: Press Start 2P for authentic retro feel
 - **Smooth Transitions**: Fade effects and visual polish
 
-### 📱 **Technical**
+###  **Technical**
 - **Fully Responsive**: Optimized for desktop, tablet, and mobile devices
 - **Single HTML File**: No dependencies, runs entirely in browser
 - **Pure Vanilla JavaScript**: No frameworks required
@@ -32,7 +32,7 @@ An interactive text-based narrative game with pixel art aesthetics, telling the 
 
 ---
 
-## 🎭 Story Overview
+##  Story Overview
 
 You are **Rue**, the watershade—a witch who sees reflections of truth in water. When you wake with the Hunter's mark spreading across your skin, you and your six sisters must perform an ancient ritual to break the curse.
 
@@ -48,13 +48,7 @@ You are **Rue**, the watershade—a witch who sees reflections of truth in water
 
 ---
 
-## 🎯 How to Play
-
-### Installation
-
-1. **Download** the `lament-of-stars.html` file
-2. **Open** it in any modern web browser (Chrome, Firefox, Safari, Edge)
-3. **Play!** No installation or server required
+##  How to Play
 
 ### Controls
 
@@ -73,48 +67,29 @@ You are **Rue**, the watershade—a witch who sees reflections of truth in water
 
 ---
 
-## 🏆 Endings Guide
+##  Endings Guide
 
 The game features **4 distinct endings** determined by your choices:
 
-### 1. 🌟 **BOUND**
+### 1.  **BOUND**
 - *Requirement*: Moderate to high Bonds, moderate Curse
 - You and your sisters are bound together, awaiting transformation into stars
 
-### 2. 🤝 **HELD**
+### 2.  **HELD**
 - *Requirement*: High Bonds (≥7), Low Curse (≤3)
 - Love and sisterhood contain the curse—you hold each other through the darkness
 
-### 3. 🔮 **TRANSFORMED**
+### 3.  **TRANSFORMED**
 - *Requirement*: High Curse (≥6), High Knowledge (≥3)
 - You become something new, carrying both light and shadow
 
-### 4. 💀 **CONSUMED** *(Bad Ending)*
+### 4.  **CONSUMED** *(Bad Ending)*
 - *Requirement*: Low Bonds (≤3)
 - Lost to the curse when bonds are too weak—a warning to those who face darkness alone
 
 ---
 
-## 🎨 Visual Design
-
-### Color Palette
-
-```css
-Primary Violet:  #7B2CBF  /* Main UI elements */
-Deep Violet:     #3C096C  /* Shadows and depth */
-Light Violet:    #9D4EDD  /* Highlights and titles */
-Pale Violet:     #C77DFF  /* Secondary accents */
-Pure Black:      #000000  /* Background */
-Dark Gray:       #0d0d0d  /* Text boxes */
-```
-
-### Typography
-- **Font**: Press Start 2P (Google Fonts)
-- **Style**: Monospace pixel font for retro authenticity
-
----
-
-## 🛠️ Technical Details
+##  Technical Details
 
 ### Built With
 - **HTML5** - Structure
@@ -127,72 +102,9 @@ Dark Gray:       #0d0d0d  /* Text boxes */
 - ✅ Safari (14+)
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-### File Structure
-```
-lament-of-stars.html    # Complete game (single file)
-README.md               # This file
-```
-
 ---
 
-## 📖 Game Structure
-
-### Act 1: The Marking
-- **Duration**: 5-7 minutes
-- **Beats**: 7 major story beats
-- **Focus**: Discovery of the curse and calling your sisters
-
-### Act 2: The Ritual
-- **Duration**: 7-9 minutes
-- **Beats**: 12 major story beats
-- **Focus**: Preparation and performing the ritual under the full moon
-
-### Act 3: The Choice
-- **Duration**: 5-8 minutes
-- **Paths**: 4 critical decision paths
-- **Focus**: The ritual breaks—what will you do?
-
----
-
-## 🎮 Development
-
-### Key Features Implementation
-
-**Stat Tracking System**
-```javascript
-{
-  bonds: 0-10,      // Connection with sisters
-  curse: 0-10,      // Mark's influence
-  knowledge: 0-5    // Understanding the curse
-}
-```
-
-**Ending Logic**
-```javascript
-if (bonds ≤ 3) → CONSUMED
-else if (bonds ≥ 7 && curse ≤ 3) → HELD
-else if (bonds ≥ 7 && curse ≥ 4) → BOUND
-else if (curse ≥ 6 && knowledge ≥ 3) → TRANSFORMED
-else → BOUND (default)
-```
-
----
-
-## 🎭 Lore & Inspiration
-
-Based on VIIXE's "You and I" era lore, this game explores themes of:
-- **Sisterhood** and chosen family
-- **Transformation** over destruction
-- **The price of power** and ancient magic
-- **Reflection** and self-truth
-- **Stars as eternal witnesses** to witch history
-
-### The Hunter's Curse
-An ancient shadow that marks those who see too much truth. The Hunter himself was once a man who looked into water and hated what he saw—his own reflection. Now he seeks to destroy all watershades who can show others their truth.
-
----
-
-## 📝 Credits
+##  Credits
 
 ### Story & Design
 - Based on **VIIXE** (fictional K-pop group concept)
@@ -210,29 +122,7 @@ An ancient shadow that marks those who see too much truth. The Hunter himself wa
 
 ---
 
-## 🌟 Screenshots
-
-### Title Screen
-```
-████████████████████████████████████████
-█                                      █
-█   ▓▓▓ LAMENT OF STARS ▓▓▓            █
-█   ░░░ A VIIXE STORY ░░░               █
-█                                      █
-█   [Pixel starfield background]       █
-█                                      █
-████████████████████████████████████████
-```
-
-### Gameplay
-- Dark atmospheric interface
-- Violet-tinted UI elements
-- Real-time stat tracking
-- Choice-driven narrative
-  
----
-
-## 📞 Support
+##  Support
 
 Found a bug? Have a question?
 - Open an issue on GitHub
@@ -241,8 +131,7 @@ Found a bug? Have a question?
 
 ---
 
-
-## 💫 Final Note
+##  Final Note
 
 > *"When you look to the night sky, do not whisper to gods. Whisper to us. We are listening."*
 
