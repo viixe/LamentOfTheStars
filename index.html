@@ -679,6 +679,24 @@
             document.getElementById('storyContainer').classList.add('active');
             document.getElementById('statsDisplay').style.display = 'block';
             document.getElementById('musicControls').style.display = 'block';
+            
+            // Auto-start music when game begins
+            initMusic();
+            setTimeout(() => {
+                backgroundMusic.play().catch(e => {
+                    console.log('Auto-play blocked by browser. User must click music button.');
+                    // Music will need manual activation due to browser auto-play policies
+                });
+                
+                // Update button state if music starts
+                if (!backgroundMusic.paused) {
+                    const btn = document.getElementById('musicToggle');
+                    btn.textContent = '🔊 MUSIC ON';
+                    btn.classList.add('active');
+                    isMusicPlaying = true;
+                }
+            }, 100);
+            
             showBeat('beat1');
         }
 
@@ -910,7 +928,7 @@
                 text: [
                     'She\'s at your door within moments.',
                     '',
-                    'Silver hair loose.',
+                    'Hair loose.',
                     'Eyes sharp and awake.'
                 ],
                 choices: [
@@ -923,7 +941,7 @@
                     'Eventually, you call for her.',
                     '',
                     'She comes without hesitation.',
-                    'Silver hair loose.',
+                    'Hair loose.',
                     'Eyes sharp and awake.'
                 ],
                 choices: [
