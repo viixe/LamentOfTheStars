@@ -274,6 +274,63 @@
             margin: 20px 0;
         }
 
+        /* Save Controls */
+        .save-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--deep-violet);
+            padding: 15px;
+            z-index: 100;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 0.4);
+            display: none;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .save-btn {
+            background: var(--deep-violet);
+            color: #FFFFFF;
+            border: 2px solid #333;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            background: var(--primary-violet);
+            box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+        }
+
+        .save-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .autosave-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(157, 78, 221, 0.9);
+            color: #FFFFFF;
+            padding: 8px 12px;
+            border: 2px solid var(--light-violet);
+            font-size: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .autosave-indicator.show {
+            opacity: 1;
+        }
+
         /* Music Controls */
         .music-controls {
             position: fixed;
@@ -403,12 +460,27 @@
                 font-size: 8px;
             }
 
+            .save-controls {
+                position: relative;
+                bottom: 0;
+                left: 0;
+                margin: 20px 0 0 0;
+                width: 100%;
+            }
+
             .music-controls {
                 position: relative;
                 bottom: 0;
                 right: 0;
                 margin: 20px 0 0 0;
                 width: 100%;
+            }
+
+            .autosave-indicator {
+                top: 10px;
+                left: 10px;
+                font-size: 7px;
+                padding: 6px 10px;
             }
 
             .credits {
@@ -463,6 +535,11 @@
     <!-- Starfield Background -->
     <div id="starfield"></div>
 
+    <!-- Autosave Indicator -->
+    <div class="autosave-indicator" id="autosaveIndicator">
+        ✓ AUTO-SAVED
+    </div>
+
     <!-- Stats Display -->
     <div class="stats-display" id="statsDisplay" style="display: none;">
         <div class="stat-item">
@@ -483,6 +560,13 @@
                 <div class="stat-fill" id="knowledgeFill" style="width: 0%"></div>
             </div>
         </div>
+    </div>
+
+    <!-- Save Controls -->
+    <div class="save-controls" id="saveControls">
+        <button class="save-btn" id="saveBtn" onclick="manualSave()">💾 SAVE</button>
+        <button class="save-btn" id="loadBtn" onclick="loadGame()">📂 LOAD</button>
+        <button class="save-btn" id="deleteSaveBtn" onclick="deleteSave()">🗑️ DELETE</button>
     </div>
 
     <!-- Music Controls -->
@@ -510,6 +594,7 @@
 
             <div class="choices">
                 <button class="choice-btn" onclick="startGame()">START GAME</button>
+                <button class="choice-btn" id="continueBtn" onclick="continueGame()" style="display: none;">CONTINUE</button>
             </div>
         </div>
 
@@ -541,18 +626,18 @@
         let backgroundMusic = null;
         let isMusicPlaying = false;
 
-        // Initialize music (you'll need to replace this URL with your actual music file)
+        // Save System Constants
+        const SAVE_KEY = 'lamentOfTheStars_save';
+        const AUTOSAVE_INTERVAL = 30000; // 30 seconds
+        let autosaveTimer = null;
+
+        // Initialize music
         function initMusic() {
-            // Using your GitHub repository music file
             backgroundMusic = new Audio();
-            
-            // GitHub raw URL for the music file
             backgroundMusic.src = 'https://raw.githubusercontent.com/viixe/LamentOfTheStars/6f9ad2e643ec8da7a0aed448507b88c28ef4f621/resources/bg.mp3';
-            
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.3;
             
-            // Add fade in effect
             backgroundMusic.addEventListener('play', () => {
                 let vol = 0;
                 const fadeIn = setInterval(() => {
@@ -574,7 +659,6 @@
             }
 
             if (isMusicPlaying) {
-                // Fade out
                 let vol = backgroundMusic.volume;
                 const fadeOut = setInterval(() => {
                     if (vol > 0) {
@@ -609,12 +693,9 @@
 
         // Sound effects
         function playSound(type) {
-            // Placeholder for sound effects
-            // You can add different sounds for different actions
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             
             if (type === 'click') {
-                // Soft click sound
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
                 
@@ -627,6 +708,148 @@
                 
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        }
+
+        // Save System Functions
+        function saveGame(isAuto = false) {
+            try {
+                const saveData = {
+                    gameState: gameState,
+                    timestamp: new Date().toISOString(),
+                    version: '1.0'
+                };
+                
+                localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+                
+                // Show indicator
+                const indicator = document.getElementById('autosaveIndicator');
+                indicator.textContent = isAuto ? '✓ AUTO-SAVED' : '✓ SAVED';
+                indicator.classList.add('show');
+                
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 2000);
+                
+                // Update button states
+                updateSaveButtons();
+                
+                return true;
+            } catch (error) {
+                console.error('Save failed:', error);
+                alert('Failed to save game. Please check your browser settings.');
+                return false;
+            }
+        }
+
+        function loadGame() {
+            try {
+                const savedData = localStorage.getItem(SAVE_KEY);
+                
+                if (!savedData) {
+                    alert('No saved game found!');
+                    return false;
+                }
+                
+                const saveData = JSON.parse(savedData);
+                
+                // Confirm load
+                const saveDate = new Date(saveData.timestamp).toLocaleString();
+                if (!confirm(`Load save from ${saveDate}?`)) {
+                    return false;
+                }
+                
+                // Restore game state
+                gameState = saveData.gameState;
+                
+                // Update UI
+                document.getElementById('titleScreen').style.display = 'none';
+                document.getElementById('storyContainer').classList.add('active');
+                document.getElementById('statsDisplay').style.display = 'block';
+                document.getElementById('musicControls').style.display = 'block';
+                document.getElementById('saveControls').style.display = 'flex';
+                
+                // Show current beat
+                showBeat(gameState.currentBeat, true);
+                
+                // Update stats
+                updateStats();
+                
+                // Start autosave
+                startAutosave();
+                
+                return true;
+            } catch (error) {
+                console.error('Load failed:', error);
+                alert('Failed to load game. Save data may be corrupted.');
+                return false;
+            }
+        }
+
+        function manualSave() {
+            if (saveGame(false)) {
+                playSound('click');
+            }
+        }
+
+        function deleteSave() {
+            if (confirm('Are you sure you want to delete your save? This cannot be undone!')) {
+                localStorage.removeItem(SAVE_KEY);
+                alert('Save deleted.');
+                updateSaveButtons();
+                
+                // Update continue button on title screen
+                const continueBtn = document.getElementById('continueBtn');
+                if (continueBtn) {
+                    continueBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function checkForSave() {
+            const savedData = localStorage.getItem(SAVE_KEY);
+            const continueBtn = document.getElementById('continueBtn');
+            
+            if (savedData && continueBtn) {
+                continueBtn.style.display = 'block';
+            }
+        }
+
+        function continueGame() {
+            loadGame();
+        }
+
+        function updateSaveButtons() {
+            const hasSave = localStorage.getItem(SAVE_KEY) !== null;
+            const loadBtn = document.getElementById('loadBtn');
+            const deleteBtn = document.getElementById('deleteSaveBtn');
+            
+            if (loadBtn) {
+                loadBtn.disabled = !hasSave;
+            }
+            if (deleteBtn) {
+                deleteBtn.disabled = !hasSave;
+            }
+        }
+
+        function startAutosave() {
+            // Clear any existing autosave timer
+            if (autosaveTimer) {
+                clearInterval(autosaveTimer);
+            }
+            
+            // Start new autosave timer
+            autosaveTimer = setInterval(() => {
+                if (gameState.currentBeat && gameState.currentBeat !== 'restart') {
+                    saveGame(true);
+                }
+            }, AUTOSAVE_INTERVAL);
+        }
+
+        function stopAutosave() {
+            if (autosaveTimer) {
+                clearInterval(autosaveTimer);
+                autosaveTimer = null;
             }
         }
 
@@ -647,6 +870,8 @@
         }
 
         createStarfield();
+        checkForSave();
+        updateSaveButtons();
 
         // Update stats display
         function updateStats() {
@@ -679,16 +904,28 @@
             document.getElementById('storyContainer').classList.add('active');
             document.getElementById('statsDisplay').style.display = 'block';
             document.getElementById('musicControls').style.display = 'block';
+            document.getElementById('saveControls').style.display = 'flex';
+            
+            // Reset game state for new game
+            gameState = {
+                bonds: 0,
+                curse: 0,
+                knowledge: 0,
+                currentBeat: null,
+                history: [],
+                hasCalledLilli: false,
+                hasWashedMark: false,
+                hasExaminedMark: false,
+                ritualToken: null
+            };
             
             // Auto-start music when game begins
             initMusic();
             setTimeout(() => {
                 backgroundMusic.play().catch(e => {
                     console.log('Auto-play blocked by browser. User must click music button.');
-                    // Music will need manual activation due to browser auto-play policies
                 });
                 
-                // Update button state if music starts
                 if (!backgroundMusic.paused) {
                     const btn = document.getElementById('musicToggle');
                     btn.textContent = '🔊 MUSIC ON';
@@ -696,6 +933,9 @@
                     isMusicPlaying = true;
                 }
             }, 100);
+            
+            // Start autosave
+            startAutosave();
             
             showBeat('beat1');
         }
@@ -2071,9 +2311,11 @@
         };
 
         // Show beat function
-        function showBeat(beatId) {
+        function showBeat(beatId, skipSave = false) {
             // Handle restart first - reload the page
             if (beatId === 'restart') {
+                // Stop autosave
+                stopAutosave();
                 location.reload();
                 return;
             }
@@ -2093,6 +2335,11 @@
 
             gameState.currentBeat = beatId;
             gameState.history.push(beatId);
+
+            // Auto-save after each beat (unless loading)
+            if (!skipSave) {
+                saveGame(true);
+            }
 
             // Update text box
             const textBox = document.getElementById('textBox');
@@ -2141,6 +2388,9 @@
 
             // Handle ending display with manual continue option
             if (beat.ending) {
+                // Stop autosave when game ends
+                stopAutosave();
+                
                 // Add a continue button after the ending text
                 setTimeout(() => {
                     const continueBtn = document.createElement('button');
