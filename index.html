@@ -274,6 +274,86 @@
             margin: 20px 0;
         }
 
+        /* Music Controls */
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--deep-violet);
+            padding: 15px;
+            z-index: 100;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 0.4);
+        }
+
+        .music-btn {
+            background: var(--deep-violet);
+            color: #FFFFFF;
+            border: 2px solid #333;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .music-btn:hover {
+            background: var(--primary-violet);
+            box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+        }
+
+        .music-btn.active {
+            background: var(--primary-violet);
+            border-color: var(--light-violet);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 8px;
+            color: #999;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 5px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            appearance: none;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: var(--primary-violet);
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            background: var(--primary-violet);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Text effects */
+        .emphasis {
+            color: var(--light-violet);
+            text-shadow: 0 0 5px rgba(157, 78, 221, 0.5);
+        }
+
+        .whisper {
+            font-style: italic;
+            opacity: 0.7;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .game-container {
@@ -321,6 +401,14 @@
                 margin: 0 0 20px 0;
                 width: 100%;
                 font-size: 8px;
+            }
+
+            .music-controls {
+                position: relative;
+                bottom: 0;
+                right: 0;
+                margin: 20px 0 0 0;
+                width: 100%;
             }
 
             .credits {
@@ -397,6 +485,15 @@
         </div>
     </div>
 
+    <!-- Music Controls -->
+    <div class="music-controls" id="musicControls" style="display: none;">
+        <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇 MUSIC OFF</button>
+        <div class="volume-control">
+            <span>VOL</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="changeVolume()">
+        </div>
+    </div>
+
     <div class="game-container">
         <!-- Title Screen -->
         <div id="titleScreen" class="title-screen fade-in">
@@ -439,6 +536,99 @@
             hasExaminedMark: false,
             ritualToken: null
         };
+
+        // Music System
+        let backgroundMusic = null;
+        let isMusicPlaying = false;
+
+        // Initialize music (you'll need to replace this URL with your actual music file)
+        function initMusic() {
+            // Using your GitHub repository music file
+            backgroundMusic = new Audio();
+            
+            // GitHub raw URL for the music file
+            backgroundMusic.src = 'https://raw.githubusercontent.com/viixe/LamentOfTheStars/6f9ad2e643ec8da7a0aed448507b88c28ef4f621/resources/bg.mp3';
+            
+            backgroundMusic.loop = true;
+            backgroundMusic.volume = 0.3;
+            
+            // Add fade in effect
+            backgroundMusic.addEventListener('play', () => {
+                let vol = 0;
+                const fadeIn = setInterval(() => {
+                    if (vol < 0.3) {
+                        vol += 0.01;
+                        backgroundMusic.volume = vol;
+                    } else {
+                        clearInterval(fadeIn);
+                    }
+                }, 50);
+            });
+        }
+
+        function toggleMusic() {
+            const btn = document.getElementById('musicToggle');
+            
+            if (!backgroundMusic) {
+                initMusic();
+            }
+
+            if (isMusicPlaying) {
+                // Fade out
+                let vol = backgroundMusic.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0) {
+                        vol -= 0.01;
+                        backgroundMusic.volume = Math.max(0, vol);
+                    } else {
+                        backgroundMusic.pause();
+                        clearInterval(fadeOut);
+                    }
+                }, 50);
+                
+                btn.textContent = '🔇 MUSIC OFF';
+                btn.classList.remove('active');
+                isMusicPlaying = false;
+            } else {
+                backgroundMusic.play().catch(e => {
+                    console.log('Music playback failed:', e);
+                    alert('Click again to enable music');
+                });
+                btn.textContent = '🔊 MUSIC ON';
+                btn.classList.add('active');
+                isMusicPlaying = true;
+            }
+        }
+
+        function changeVolume() {
+            const slider = document.getElementById('volumeSlider');
+            if (backgroundMusic) {
+                backgroundMusic.volume = slider.value / 100;
+            }
+        }
+
+        // Sound effects
+        function playSound(type) {
+            // Placeholder for sound effects
+            // You can add different sounds for different actions
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            if (type === 'click') {
+                // Soft click sound
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        }
 
         // Create starfield
         function createStarfield() {
@@ -488,6 +678,7 @@
             document.getElementById('titleScreen').style.display = 'none';
             document.getElementById('storyContainer').classList.add('active');
             document.getElementById('statsDisplay').style.display = 'block';
+            document.getElementById('musicControls').style.display = 'block';
             showBeat('beat1');
         }
 
@@ -719,7 +910,7 @@
                 text: [
                     'She\'s at your door within moments.',
                     '',
-                    'Hair loose.',
+                    'Silver hair loose.',
                     'Eyes sharp and awake.'
                 ],
                 choices: [
@@ -732,7 +923,7 @@
                     'Eventually, you call for her.',
                     '',
                     'She comes without hesitation.',
-                    'Hair loose.',
+                    'Silver hair loose.',
                     'Eyes sharp and awake.'
                 ],
                 choices: [
@@ -1863,9 +2054,9 @@
 
         // Show beat function
         function showBeat(beatId) {
-            const beat = story[beatId];
-            if (!beat) {
-                console.error('Beat not found:', beatId);
+            // Handle restart first - reload the page
+            if (beatId === 'restart') {
+                location.reload();
                 return;
             }
 
@@ -1876,9 +2067,9 @@
                 return;
             }
 
-            // Handle restart
-            if (beatId === 'restart') {
-                location.reload();
+            const beat = story[beatId];
+            if (!beat) {
+                console.error('Beat not found:', beatId);
                 return;
             }
 
@@ -1921,6 +2112,7 @@
                 btn.className = 'choice-btn';
                 btn.textContent = choice.text;
                 btn.onclick = () => {
+                    playSound('click');
                     if (choice.token) {
                         gameState.ritualToken = choice.token;
                     }
