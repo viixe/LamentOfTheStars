@@ -331,6 +331,11 @@
             opacity: 1;
         }
 
+        /* Mobile Controls Wrapper */
+        .mobile-controls {
+            display: none;
+        }
+
         /* Music Controls */
         .music-controls {
             position: fixed;
@@ -415,6 +420,7 @@
         @media (max-width: 768px) {
             .game-container {
                 padding: 15px;
+                padding-bottom: 80px; /* Space for bottom controls */
             }
 
             .title-screen {
@@ -451,41 +457,100 @@
                 padding: 12px 15px;
             }
 
+            /* Compact stats display at top */
             .stats-display {
-                position: relative;
-                top: 0;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                margin: 0;
+                padding: 10px;
+                font-size: 7px;
+                min-width: auto;
+                display: flex;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .stat-item {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+            .stat-bar {
+                height: 6px;
+                margin-top: 3px;
+            }
+
+            /* Consolidated bottom control bar */
+            .mobile-controls {
+                position: fixed;
+                bottom: 0;
+                left: 0;
                 right: 0;
-                margin: 0 0 20px 0;
-                width: 100%;
-                font-size: 8px;
+                background: rgba(0, 0, 0, 0.98);
+                border-top: 2px solid var(--deep-violet);
+                padding: 10px;
+                z-index: 100;
+                display: flex;
+                gap: 5px;
+                justify-content: space-between;
+                box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
             }
 
             .save-controls {
-                position: relative;
-                bottom: 0;
-                left: 0;
-                margin: 20px 0 0 0;
-                width: 100%;
+                position: static;
+                background: transparent;
+                border: none;
+                padding: 0;
+                display: flex;
+                gap: 5px;
+                flex-direction: row;
+                box-shadow: none;
+                flex: 1;
+            }
+
+            .save-btn {
+                padding: 8px 10px;
+                font-size: 7px;
+                flex: 1;
+                min-width: 0;
             }
 
             .music-controls {
-                position: relative;
-                bottom: 0;
-                right: 0;
-                margin: 20px 0 0 0;
-                width: 100%;
+                position: static;
+                background: transparent;
+                border: none;
+                padding: 0;
+                display: flex;
+                gap: 5px;
+                align-items: center;
+                box-shadow: none;
+                flex: 0 0 auto;
+            }
+
+            .music-btn {
+                padding: 8px 10px;
+                font-size: 7px;
+                margin: 0;
+                white-space: nowrap;
+            }
+
+            .volume-control {
+                display: none; /* Hide volume slider on mobile to save space */
             }
 
             .autosave-indicator {
                 top: 10px;
-                left: 10px;
+                left: 50%;
+                transform: translateX(-50%);
                 font-size: 7px;
-                padding: 6px 10px;
+                padding: 5px 10px;
             }
 
             .credits {
                 font-size: 9px;
-                padding: 30px 15px;
+                padding: 30px 15px 100px;
             }
 
             .credits h2 {
@@ -576,6 +641,11 @@
             <span>VOL</span>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="changeVolume()">
         </div>
+    </div>
+
+    <!-- Mobile Controls Wrapper (for tablets and phones) -->
+    <div class="mobile-controls" id="mobileControls" style="display: none;">
+        <!-- Controls will be moved here on mobile -->
     </div>
 
     <div class="game-container">
@@ -766,8 +836,17 @@
                 document.getElementById('titleScreen').style.display = 'none';
                 document.getElementById('storyContainer').classList.add('active');
                 document.getElementById('statsDisplay').style.display = 'block';
-                document.getElementById('musicControls').style.display = 'block';
-                document.getElementById('saveControls').style.display = 'flex';
+                
+                // Show controls based on screen size
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {
+                    document.getElementById('mobileControls').style.display = 'flex';
+                    document.getElementById('saveControls').style.display = 'flex';
+                    document.getElementById('musicControls').style.display = 'flex';
+                } else {
+                    document.getElementById('saveControls').style.display = 'flex';
+                    document.getElementById('musicControls').style.display = 'block';
+                }
                 
                 // Show current beat
                 showBeat(gameState.currentBeat, true);
@@ -872,6 +951,40 @@
         createStarfield();
         checkForSave();
         updateSaveButtons();
+        setupMobileLayout();
+
+        // Setup mobile layout
+        function setupMobileLayout() {
+            function reorganizeForMobile() {
+                const isMobile = window.innerWidth <= 768;
+                const mobileControls = document.getElementById('mobileControls');
+                const saveControls = document.getElementById('saveControls');
+                const musicControls = document.getElementById('musicControls');
+
+                if (isMobile && mobileControls) {
+                    // Move controls to mobile wrapper
+                    mobileControls.style.display = 'flex';
+                    if (saveControls && !mobileControls.contains(saveControls)) {
+                        mobileControls.appendChild(saveControls);
+                    }
+                    if (musicControls && !mobileControls.contains(musicControls)) {
+                        mobileControls.appendChild(musicControls);
+                    }
+                } else if (!isMobile && mobileControls) {
+                    // Restore original positions on desktop
+                    mobileControls.style.display = 'none';
+                    if (saveControls && mobileControls.contains(saveControls)) {
+                        document.body.insertBefore(saveControls, mobileControls);
+                    }
+                    if (musicControls && mobileControls.contains(musicControls)) {
+                        document.body.insertBefore(musicControls, mobileControls);
+                    }
+                }
+            }
+
+            reorganizeForMobile();
+            window.addEventListener('resize', reorganizeForMobile);
+        }
 
         // Update stats display
         function updateStats() {
@@ -903,8 +1016,17 @@
             document.getElementById('titleScreen').style.display = 'none';
             document.getElementById('storyContainer').classList.add('active');
             document.getElementById('statsDisplay').style.display = 'block';
-            document.getElementById('musicControls').style.display = 'block';
-            document.getElementById('saveControls').style.display = 'flex';
+            
+            // Show controls based on screen size
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                document.getElementById('mobileControls').style.display = 'flex';
+                document.getElementById('saveControls').style.display = 'flex';
+                document.getElementById('musicControls').style.display = 'flex';
+            } else {
+                document.getElementById('saveControls').style.display = 'flex';
+                document.getElementById('musicControls').style.display = 'block';
+            }
             
             // Reset game state for new game
             gameState = {
